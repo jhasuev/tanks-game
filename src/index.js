@@ -1,4 +1,5 @@
 import './styles/main.scss'
+import maps from "./maps.json"
 
 const KEYS = {
     37: 'left',
@@ -18,20 +19,12 @@ const Game = {
         land: undefined,
         brick: undefined,
         stone: undefined,
+        water: undefined,
+        grass: undefined,
     },
 
     user: undefined,
     maps: undefined,
-
-    // row = 26 * 1 = 26
-    // col = 26 * 2 = 52
-
-    // 0 - ничего (пустая зона)
-    // 1 - вода
-    // 2 - зелень
-    // 3 - кирпич
-    // 4 - камень
-
 
     start() {
         this.init()
@@ -108,8 +101,9 @@ const Game = {
 
     render() {
         this.backgroundRender()
-        this.maps.render()
+        this.maps.renderBackground()
         this.user.render()
+        this.maps.renderMap()
     },
 
     backgroundRender() {
@@ -190,8 +184,49 @@ Game.user = {
                 break;
         }
 
-        this.x += this.dx
-        this.y += this.dy
+        if (this.directions.length && !this.checkCollide()) {
+            this.x += this.dx
+            this.y += this.dy
+        }
+    },
+
+    checkCollide() {
+        let x = this.x + this.dx
+        let y = this.y + this.dy
+
+        // коллизия по границам
+        if (
+            x < this.game.maps.x
+            || x + this.width > this.game.maps.x + this.game.maps.width
+            || y < this.game.maps.y
+            || y + this.height > this.game.maps.y + this.game.maps.height
+        ) {
+            return true
+        }
+
+        // коллизия по блокам
+        if (this.getAllNextCells().some(cell => !this.game.maps.isCellWalkable(cell))) {
+            return true
+        }
+    },
+
+    getAllNextCells() {
+        let x = this.x + this.dx
+        let y = this.y + this.dy
+
+        let rowStart = Math.floor((y - this.game.maps.y) / this.game.maps.cellSize)
+        let rowEnd = Math.floor(((y + this.height - .001) - this.game.maps.y) / this.game.maps.cellSize)
+        let colStart = Math.floor((x - this.game.maps.x) / this.game.maps.cellSize)
+        let colEnd = Math.floor(((x + this.width - .001) - this.game.maps.x) / this.game.maps.cellSize)
+
+        let cols = []
+        for (let row = rowStart; row <= rowEnd; row++) {
+            for (let col = colStart; col <= colEnd; col++) {
+                cols.push(this.game.maps.map[row][col])
+            }
+        }
+
+        return cols
     },
 
     update() {
@@ -212,77 +247,78 @@ Game.user = {
         this.game.ctx.restore()
     },
 }
+
 Game.maps = {
     game: Game,
     map: undefined,
+    userInfo: undefined,
     width: undefined,
     height: undefined,
-    topOffset: undefined,
-    leftOffset: undefined,
+    y: undefined,
+    x: undefined,
     cellSize: 17,
+    level: 0,
+    cellTypes: {
+        0: { walkable: true }, // 0 - ничего (пустая зона)
+        1: { walkable: false }, // 1 - вода
+        2: { walkable: true }, // 2 - зелень
+        3: { walkable: false }, // 3 - кирпич
+        4: { walkable: false }, // 4 - камень
+    },
+    bgPattern: undefined,
 
-    create(){
-        this.map = [
-            [0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0],
-            [0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0],
-            [0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0],
-            [0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0],
-            [0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0],
-            [0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0],
-            [0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0],
-            [0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0],
-            [0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0],
-            [0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0],
-            [0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0],
-            [0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0],
-            [0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0],
-            [0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0],
-            [0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0],
-            [0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0],
-            [0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0],
-            [0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0, 3, 3, 0, 0],
-            [0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0],
-            [0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0],
-            [0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0],
-            [0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0],
-            [0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0],
-            [0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0],
-            [0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0],
-        ]
-        let user = {
-            row: 8,
-            col: 1,
-        }
+    create() {
+        this.map = maps[this.level].map
+        this.userInfo = maps[this.level].user
 
         this.height = this.map.length * this.cellSize
         this.width = this.map[0].length * this.cellSize
 
-        this.topOffset = this.game.height / 2 - this.height / 2
-        this.leftOffset = this.game.width / 2 - this.width / 2
+        this.y = this.game.height / 2 - this.height / 2
+        this.x = this.game.width / 2 - this.width / 2
 
-        this.game.user.x = this.leftOffset + user.col * (this.cellSize * 2)
-        this.game.user.y = this.topOffset + user.row * (this.cellSize * 2)
+        this.game.user.x = this.x + this.userInfo.col * this.cellSize
+        this.game.user.y = this.y + this.userInfo.row * this.cellSize
+        this.game.user.direction = this.userInfo.direction
     },
 
-    render(){
+    renderMap() {
+        let spriteToDraw = undefined
+
         this.map.forEach((row, rowIndex) => {
             row.forEach((col, colIndex) => {
-                let spriteToDraw = this.getColSprite(col)
+                spriteToDraw = this.getCellSprite(col)
                 if (spriteToDraw) {
-                    this.game.ctx.drawImage(spriteToDraw, this.leftOffset + colIndex * this.cellSize, this.topOffset + rowIndex * this.cellSize)
+                    this.game.ctx.drawImage(spriteToDraw, this.x + colIndex * this.cellSize, this.y + rowIndex * this.cellSize)
                 }
             })
         })
     },
 
-    getColSprite(col){
-        if (col === 3)
-            return this.game.sprites.brick
+    renderBackground() {
+        if (!this.bgPattern) {
+            this.bgPattern = this.game.ctx.createPattern(this.game.sprites.land, 'repeat')
+        }
+        this.game.ctx.fillStyle = this.bgPattern
+        this.game.ctx.fillRect(this.x, this.y, this.width, this.height)
+    },
 
-        if (col === 4)
-            return this.game.sprites.stone
+    getCellSprite(col) {
+        // 0 - ничего (пустая зона)
+        // 1 - вода
+        // 2 - зелень
+        // 3 - кирпич
+        // 4 - камень
 
-        return this.game.sprites.land
+        if (col === 1) return this.game.sprites.water
+        if (col === 2) return this.game.sprites.grass
+        if (col === 3) return this.game.sprites.brick
+        if (col === 4) return this.game.sprites.stone
+        return null
+    },
+
+    isCellWalkable(cell){
+        return this.cellTypes[cell].walkable
     },
 }
 
