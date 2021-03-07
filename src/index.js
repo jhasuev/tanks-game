@@ -256,14 +256,29 @@ Game.maps = {
     height: undefined,
     y: undefined,
     x: undefined,
-    cellSize: 17,
+    cellSize: 27, // original size of cell is "17", the other pixels are offsets
     level: 0,
     cellTypes: {
-        0: { walkable: true }, // 0 - ничего (пустая зона)
-        1: { walkable: false }, // 1 - вода
-        2: { walkable: true }, // 2 - зелень
-        3: { walkable: false }, // 3 - кирпич
-        4: { walkable: false }, // 4 - камень
+        0: { // 0 - ничего (пустая зона)
+            walkable: true,
+            sprite: 'land',
+        },
+        1: { // 1 - вода
+            walkable: false,
+            sprite: 'water',
+        },
+        2: { // 2 - зелень
+            walkable: true,
+            sprite: 'grass',
+        },
+        3: { // 3 - кирпич
+            walkable: false,
+            sprite: 'brick',
+        },
+        4: { // 4 - камень
+            walkable: false,
+            sprite: 'stone',
+        },
     },
     bgPattern: undefined,
 
@@ -283,13 +298,13 @@ Game.maps = {
     },
 
     renderMap() {
-        let spriteToDraw = undefined
+        let spriteName = undefined
 
         this.map.forEach((row, rowIndex) => {
             row.forEach((col, colIndex) => {
-                spriteToDraw = this.getCellSprite(col)
-                if (spriteToDraw) {
-                    this.game.ctx.drawImage(spriteToDraw, this.x + colIndex * this.cellSize, this.y + rowIndex * this.cellSize)
+                spriteName = this.getCellName(col)
+                if (spriteName && spriteName !== 'land') {
+                    this.game.ctx.drawImage(this.game.sprites[spriteName], this.x + colIndex * this.cellSize, this.y + rowIndex * this.cellSize,this.cellSize,this.cellSize)
                 }
             })
         })
@@ -303,18 +318,8 @@ Game.maps = {
         this.game.ctx.fillRect(this.x, this.y, this.width, this.height)
     },
 
-    getCellSprite(col) {
-        // 0 - ничего (пустая зона)
-        // 1 - вода
-        // 2 - зелень
-        // 3 - кирпич
-        // 4 - камень
-
-        if (col === 1) return this.game.sprites.water
-        if (col === 2) return this.game.sprites.grass
-        if (col === 3) return this.game.sprites.brick
-        if (col === 4) return this.game.sprites.stone
-        return null
+    getCellName(cell) {
+        return this.cellTypes[cell].sprite
     },
 
     isCellWalkable(cell){
