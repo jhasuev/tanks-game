@@ -30,7 +30,7 @@ function Npc(game, type = 'user') {
     }
 
     this.canGoTo = (direction) => {
-        let positions = this.getAllCurrentCols()
+        let positions = this.getAroundCols(false)
 
         positions.map(position => {
             let row = position.row
@@ -160,9 +160,14 @@ function Npc(game, type = 'user') {
         }
     }
 
-    this.getAllCurrentCols = () => {
-        let x = this.x + this.dx
-        let y = this.y + this.dy
+    this.getAroundCols = (next = true) => {
+        let x = this.x
+        let y = this.y
+
+        if (next) {
+            x += this.dx
+            y += this.dy
+        }
 
         let rowStart = Math.floor((y - this.game.maps.y) / this.game.maps.cellSize)
         let rowEnd = Math.floor(((y + this.height - .001) - this.game.maps.y) / this.game.maps.cellSize)
@@ -186,7 +191,7 @@ function Npc(game, type = 'user') {
     }
 
     this.getAllCurrentCells = () => {
-        return this.getAllCurrentCols().map(col => col.cell)
+        return this.getAroundCols().map(col => col.cell)
     }
 
     this.update = () => {
