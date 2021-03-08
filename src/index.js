@@ -1,6 +1,7 @@
 import './styles/main.scss'
 import Maps from "./models/Maps.js"
 import Npc from "./models/Npc.js"
+import { random } from "./helper"
 
 const KEYS = {
     37: 'left',
@@ -52,15 +53,27 @@ const Game = {
     },
 
     createUser(){
-        this.user = new Npc(this)
-        this.user.direction = this.maps.userInfo.direction
-        this.user.setPositions(this.maps.userInfo.row, this.maps.userInfo.col)
+        this.user = new Npc(this, 'user')
+        this.user.setDirection(this.maps.user.direction)
+        this.user.setPositions(this.maps.user.row, this.maps.user.col)
+        this.user.start()
     },
 
     createEnemies() {
+        for (let i = 0; i < this.maps.enemy.max; i++) {
+            this.addEnemy(this.maps.enemy.positions[i])
+        }
+    },
+
+    addEnemy(position){
         let enemy = new Npc(this, 'enemy')
-        enemy.setPositions(0,0)
-        console.log(enemy)
+        if (!position) {
+            position = this.maps.enemy.positions[random(0, this.maps.enemy.positions.length)]
+        }
+        enemy.setPositions(position.row,position.col)
+        enemy.setDirection(position.direction)
+        enemy.start()
+
         this.enemies.push(enemy)
     },
 

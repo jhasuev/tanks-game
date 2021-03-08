@@ -3,7 +3,8 @@ import maps from "../maps.json";
 function Maps(game) {
     this.game = game;
     this.map = undefined;
-    this.userInfo = undefined;
+    this.user = undefined;
+    this.enemy = undefined;
     this.width = undefined;
     this.height = undefined;
     this.y = undefined;
@@ -37,7 +38,8 @@ function Maps(game) {
     this.create = () => {
         return new Promise(resolve => {
             this.map = maps[this.level].map
-            this.userInfo = maps[this.level].user
+            this.user = maps[this.level].user
+            this.enemy = maps[this.level].enemy
 
             this.height = this.map.length * this.cellSize
             this.width = this.map[0].length * this.cellSize
@@ -75,7 +77,20 @@ function Maps(game) {
     }
 
     this.isCellWalkable = (cell) => {
-        return this.cellTypes[cell].walkable
+        return this.cellTypes[cell]?.walkable
+    }
+
+    this.getCell = (row, col) => {
+        return this.map[row] && this.map[row][col]
+    }
+
+    this.getReverseDirection = (direction) => {
+        return {
+            "left": "right",
+            "right": "left",
+            "up": "down",
+            "down": "up",
+        }[direction]
     }
 }
 
