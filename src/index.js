@@ -1,20 +1,23 @@
 import './styles/main.scss'
 import Maps from "./models/Maps.js"
 import Npc from "./models/Npc.js"
-import { random } from "./helper"
-
-const KEYS = {
-    37: 'left',
-    38: 'up',
-    39: 'right',
-    40: 'down',
-}
+import { random, KEYS } from "./helper"
 
 const Game = {
     canvas: undefined,
     ctx: undefined,
     width: undefined,
     height: undefined,
+    dimensions: {
+        max: {
+            width: 600,
+            height: 600,
+        },
+        min: {
+            width: 600,
+            height: 600,
+        },
+    },
 
     sprites: {
         user: undefined,
@@ -31,10 +34,8 @@ const Game = {
     enemies: [],
 
     start() {
-        this.init()
-        this.setPositions()
-
         this.preload().then(() => {
+            this.init()
             this.maps.create().then(() => {
                 this.createUser()
                 this.createEnemies()
@@ -47,34 +48,73 @@ const Game = {
         this.canvas = document.getElementById("game")
         this.ctx = this.canvas.getContext("2d")
 
+        this.initDimensions()
         this.initEvents()
 
         this.maps = new Maps(this)
     },
 
+    initDimensions(){
+        let data = {
+            maxWidth: this.dimensions.max.width,
+            maxHeight: this.dimensions.max.height,
+            minWidth: this.dimensions.min.width,
+            minHeight: this.dimensions.min.height,
+            realWidth: innerWidth,
+            realHeight: innerHeight,
+        }
+
+        this.fitWindow(data)
+    },
+
+    fitWindow(data){
+        let ratioWidth = data.realWidth / data.realHeight
+        let ratioHeight = data.realHeight / data.realWidth
+
+        if (ratioWidth > data.maxWidth / data.maxHeight) {
+            this.height = ratioHeight * data.maxHeight
+            this.height = Math.min(this.height, data.maxHeight)
+            this.height = Math.max(this.height, data.minHeight)
+
+            this.width = ratioWidth * this.height
+            this.canvas.style.height = ""
+            this.canvas.style.width = "100%"
+        } else {
+            this.width = ratioWidth * data.maxHeight
+            this.width = Math.min(this.width, data.maxWidth)
+            this.width = Math.max(this.width, data.minWidth)
+
+            this.height = ratioHeight * this.width
+            this.canvas.style.width = ""
+            this.canvas.style.height = "100%"
+        }
+
+        this.canvas.width = this.width
+        this.canvas.height = this.height
+    },
+
     createUser(){
-        this.user = new Npc(this, 'user')
-        this.user.setDirection(this.maps.user.direction)
-        this.user.setPositions(this.maps.user.row, this.maps.user.col)
-        this.user.start()
+        this.user = this.createNewNpc('user', this.maps.user)
     },
 
     createEnemies() {
         for (let i = 0; i < this.maps.enemy.max; i++) {
-            this.addEnemy(this.maps.enemy.positions[i])
+            this.enemies.push(this.createNewNpc('enemy', this.maps.enemy.positions[i]))
         }
     },
 
-    addEnemy(position){
-        let enemy = new Npc(this, 'enemy')
-        if (!position) {
+    createNewNpc(type, position){
+        let npc = new Npc(this, type)
+
+        if (!position && type === 'enemy') {
             position = this.maps.enemy.positions[random(0, this.maps.enemy.positions.length)]
         }
-        enemy.setPositions(position.row,position.col)
-        enemy.setDirection(position.direction)
-        enemy.start()
 
-        this.enemies.push(enemy)
+        npc.setPositions(position.row, position.col)
+        npc.setDirection(position.direction)
+        npc.init()
+
+        return npc
     },
 
     initEvents() {
@@ -95,11 +135,6 @@ const Game = {
         window.addEventListener("keyup", e => {
             onKeyEvent(e, 'remove')
         })
-    },
-
-    setPositions() {
-        this.width = this.canvas.width = 640 * 2
-        this.height = this.canvas.height = 360 * 2
     },
 
     preload() {

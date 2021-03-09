@@ -1,4 +1,4 @@
-import {random} from "../helper.js"
+import {random, getReverseDirection} from "../helper.js"
 
 function Npc(game, type = 'user') {
     this.game = game
@@ -25,7 +25,7 @@ function Npc(game, type = 'user') {
     }
     this.lastDirectionChanged = undefined
 
-    this.start = () => {
+    this.init = () => {
         this.animate()
     }
 
@@ -70,7 +70,7 @@ function Npc(game, type = 'user') {
 
         if (
             this.canGoTo(direction)
-            && direction !== this.game.maps.getReverseDirection(this.direction)
+            && direction !== getReverseDirection(this.direction)
             || this.checkCollide()
         ) {
             if (!this.directions.length) {

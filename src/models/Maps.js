@@ -83,15 +83,6 @@ function Maps(game) {
     this.getCell = (row, col) => {
         return this.map[row] && this.map[row][col]
     }
-
-    this.getReverseDirection = (direction) => {
-        return {
-            "left": "right",
-            "right": "left",
-            "up": "down",
-            "down": "up",
-        }[direction]
-    }
 }
 
 export default Maps
