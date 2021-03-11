@@ -7,7 +7,7 @@ function Npc(game, type = 'user') {
 
     this.frame = 0
     this.frames = 12
-    this.active = undefined
+    this.active = !true
 
     this.init = () => {
         this.frame = 0
@@ -37,24 +37,34 @@ function Npc(game, type = 'user') {
 
     this.render = () => {
         let sprite = this.game.sprites.base
-        if (!sprite || !this.active) return;
+        if (this.active) {
+            let imageFrameStart = sprite.width / this.frames * this.frame
+            let imageFrameEnd = sprite.width / this.frames
 
-        let imageFrameStart = sprite.width / this.frames * this.frame
-        let imageFrameEnd = sprite.width / this.frames
+            this.game.ctx.drawImage(
+                sprite,
 
-        this.game.ctx.drawImage(
-            sprite,
+                imageFrameStart,
+                0,
+                imageFrameEnd,
+                sprite.height,
 
-            imageFrameStart,
-            0,
-            imageFrameEnd,
-            sprite.height,
+                this.x,
+                this.y,
+                this.width,
+                this.height,
+            )
+        } else {
+            sprite = this.game.sprites.base_broken
+            this.game.ctx.drawImage(
+                sprite,
 
-            this.x,
-            this.y,
-            this.width,
-            this.height,
-        )
+                this.x,
+                this.y,
+                this.width,
+                this.height,
+            )
+        }
     }
 }
 

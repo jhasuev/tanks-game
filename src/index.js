@@ -32,6 +32,7 @@ const Game = {
         user: undefined,
         enemy: undefined,
         base: undefined,
+        base_broken: undefined,
         bullet: undefined,
         burning: undefined,
 
