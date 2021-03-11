@@ -2,7 +2,7 @@ import './styles/main.scss'
 import Maps from "./models/Maps.js"
 import Npc from "./models/Npc.js"
 import Bulling from "./models/Bulling.js"
-import { random, KEYS } from "./helper"
+import {random, KEYS} from "./helper"
 
 const Game = {
     canvas: undefined,
@@ -61,7 +61,7 @@ const Game = {
         this.bulling.init()
     },
 
-    initDimensions(){
+    initDimensions() {
         let data = {
             maxWidth: this.dimensions.max.width,
             maxHeight: this.dimensions.max.height,
@@ -74,7 +74,7 @@ const Game = {
         this.fitWindow(data)
     },
 
-    fitWindow(data){
+    fitWindow(data) {
         let ratioWidth = data.realWidth / data.realHeight
         let ratioHeight = data.realHeight / data.realWidth
 
@@ -100,7 +100,7 @@ const Game = {
         this.canvas.height = this.height
     },
 
-    createUser(){
+    createUser() {
         this.user = this.createNewNpc('user', this.maps.user)
     },
 
@@ -110,7 +110,7 @@ const Game = {
         }
     },
 
-    createNewNpc(type, position){
+    createNewNpc(type, position) {
         let npc = new Npc(this, type)
 
         if (!position && type === 'enemy') {

@@ -1,4 +1,4 @@
-import { checkCollide, getDirectionVelocity } from "../helper"
+import {checkCollide, getDirectionVelocity} from "../helper"
 
 function Bulling(game) {
     this.game = game
@@ -26,7 +26,7 @@ function Bulling(game) {
     }
 
     this.fire = (y, x, direction, owner) => {
-        let { dx, dy } = getDirectionVelocity(direction, this.velocity)
+        let {dx, dy} = getDirectionVelocity(direction, this.velocity)
 
         x -= this.bulling.width / 2
         y -= this.bulling.height / 2

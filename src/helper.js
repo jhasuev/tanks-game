@@ -19,7 +19,7 @@ export const getReverseDirection = (direction) => {
     }[direction]
 }
 
-export function checkCollide(first, second){
+export function checkCollide(first, second) {
     let firstStartX = first.x
     let firstStopX = first.x + first.width
     let firstStartY = first.y
@@ -31,7 +31,7 @@ export function checkCollide(first, second){
         && second.y < firstStopY;
 }
 
-export function getDirectionVelocity(direction, velocity){
+export function getDirectionVelocity(direction, velocity) {
     let dx = 0
     let dy = 0
 
@@ -53,5 +53,5 @@ export function getDirectionVelocity(direction, velocity){
             break;
     }
 
-    return { dx, dy }
+    return {dx, dy}
 }
