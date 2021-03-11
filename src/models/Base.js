@@ -55,7 +55,7 @@ function Npc(game, type = 'user') {
                 this.height,
             )
         } else {
-            sprite = this.game.sprites.base_broken
+            sprite = this.game.sprites.baseBroken
             this.game.ctx.drawImage(
                 sprite,
 
