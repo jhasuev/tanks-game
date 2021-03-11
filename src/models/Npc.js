@@ -1,4 +1,4 @@
-import {random, getReverseDirection} from "../helper.js"
+import {random, getReverseDirection, getDirectionVelocity} from "../helper.js"
 
 function Npc(game, type = 'user') {
     this.game = game
@@ -24,6 +24,7 @@ function Npc(game, type = 'user') {
         "down": 180,
     }
     this.lastDirectionChanged = undefined
+    this.lastFiredAt = undefined
 
     this.init = () => {
         this.animate()
@@ -102,32 +103,14 @@ function Npc(game, type = 'user') {
 
     this.move = () => {
         this.dx = this.dy = 0
-
-        switch (this.directions[0]) {
-            case 'left':
-                this.dx = -this.velocity;
-                this.direction = 'left';
-                break;
-
-            case 'up':
-                this.dy = -this.velocity;
-                this.direction = 'up';
-                break;
-
-            case 'right':
-                this.dx = +this.velocity;
-                this.direction = 'right';
-                break;
-
-            case 'down':
-                this.dy = +this.velocity;
-                this.direction = 'down';
-                break;
-        }
+        let velocities = getDirectionVelocity(this.directions[0], this.velocity)
+        this.dx = velocities.dx
+        this.dy = velocities.dy
 
         if (this.directions.length && !this.checkCollide()) {
             this.x += this.dx
             this.y += this.dy
+            this.direction = this.directions[0]
         }
     }
 
@@ -169,10 +152,10 @@ function Npc(game, type = 'user') {
             y += this.dy
         }
 
-        let rowStart = Math.floor((y - this.game.maps.y) / this.game.maps.cellSize)
-        let rowEnd = Math.floor(((y + this.height - .001) - this.game.maps.y) / this.game.maps.cellSize)
-        let colStart = Math.floor((x - this.game.maps.x) / this.game.maps.cellSize)
-        let colEnd = Math.floor(((x + this.width - .001) - this.game.maps.x) / this.game.maps.cellSize)
+        let rowStart = this.game.maps.getRowOn(y)
+        let rowEnd = this.game.maps.getRowOn(y + this.height - .001)
+        let colStart = this.game.maps.getColOn(x)
+        let colEnd = this.game.maps.getColOn(x + this.width - .001)
 
         rowStart = Math.max(rowStart, 0)
         colStart = Math.max(colStart, 0)
@@ -188,6 +171,34 @@ function Npc(game, type = 'user') {
         }
 
         return cols
+    }
+
+    this.fire = () => {
+        if (Date.now() - this.lastFiredAt < 500) return;
+
+        let x = this.x
+        let y = this.y
+
+        switch (this.direction) {
+            case "up":
+                x += this.width / 2;
+                break;
+            case "right":
+                y += this.height / 2;
+                x += this.width
+                break;
+            case "down":
+                x += this.width / 2;
+                y += this.height;
+                break;
+            case "left":
+                y += this.height / 2;
+                break;
+        }
+
+        this.game.bulling.fire(y, x, this.direction, this.type)
+
+        this.lastFiredAt = Date.now()
     }
 
     this.getAllCurrentCells = () => {
@@ -218,7 +229,7 @@ function Npc(game, type = 'user') {
         this.game.ctx.save()
         this.game.ctx.translate(this.x + (this.width / 2), this.y + (this.height / 2))
         this.game.ctx.rotate(this.angles[this.direction] * Math.PI / 180)
-        this.game.ctx.drawImage(sprite, imageFrameStart, 0, imageFrameEnd, imageHeight, this.width / -2, this.height / -2, this.width, this.width)
+        this.game.ctx.drawImage(sprite, imageFrameStart, 0, imageFrameEnd, imageHeight, this.width / -2, this.height / -2, this.width, this.height)
         this.game.ctx.restore()
     }
 }

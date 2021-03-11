@@ -14,22 +14,32 @@ function Maps(game) {
     this.cellTypes = {
         0: { // 0 - ничего (пустая зона)
             walkable: true,
+            armor: false,
+            bulling: true,
             sprite: 'land',
         },
         1: { // 1 - вода
             walkable: false,
+            armor: false,
+            bulling: true,
             sprite: 'water',
         },
         2: { // 2 - зелень
             walkable: true,
+            armor: false,
+            bulling: true,
             sprite: 'grass',
         },
         3: { // 3 - кирпич
             walkable: false,
+            armor: false,
+            bulling: false,
             sprite: 'brick',
         },
         4: { // 4 - камень
             walkable: false,
+            armor: true,
+            bulling: false,
             sprite: 'stone',
         },
     };
@@ -80,8 +90,47 @@ function Maps(game) {
         return this.cellTypes[cell]?.walkable
     }
 
+    this.isCellBulling = (cell) => {
+        return this.cellTypes[cell]?.bulling
+    }
+
+    this.isCellArmor = (cell) => {
+        return this.cellTypes[cell]?.armor
+    }
+
     this.getCell = (row, col) => {
         return this.map[row] && this.map[row][col]
+    }
+
+    this.getCellOn = (y, x) => {
+        if (x < this.cellSize || y < this.cellSize) return null
+
+        let row = this.getRowOn(y)
+        let col = this.getColOn(x)
+
+        if (!this.map[row] || this.map[row][col] === undefined) {
+            // console.log(`y: ${y}, row: ${row}, x: ${x}, col: ${col}`)
+            // console.log(this.map[row][col])
+            return null
+        }
+
+        let cell = this.map[row][col]
+
+        return {
+            row,
+            col,
+            cell,
+            armor: this.isCellArmor(cell),
+            bulling: this.isCellBulling(cell),
+        }
+    }
+
+    this.getRowOn = (y) => {
+        return Math.floor((y - this.y) / this.cellSize)
+    }
+
+    this.getColOn = (x) => {
+        return Math.floor((x - this.x) / this.cellSize)
     }
 }
 

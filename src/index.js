@@ -1,6 +1,7 @@
 import './styles/main.scss'
 import Maps from "./models/Maps.js"
 import Npc from "./models/Npc.js"
+import Bulling from "./models/Bulling.js"
 import { random, KEYS } from "./helper"
 
 const Game = {
@@ -22,6 +23,9 @@ const Game = {
     sprites: {
         user: undefined,
         enemy: undefined,
+        bullet: undefined,
+        burning: undefined,
+
         land: undefined,
         brick: undefined,
         stone: undefined,
@@ -31,6 +35,7 @@ const Game = {
 
     user: undefined,
     maps: undefined,
+    bulling: undefined,
     enemies: [],
 
     start() {
@@ -52,6 +57,8 @@ const Game = {
         this.initEvents()
 
         this.maps = new Maps(this)
+        this.bulling = new Bulling(this)
+        this.bulling.init()
     },
 
     initDimensions(){
@@ -121,19 +128,23 @@ const Game = {
         const onKeyEvent = ({keyCode}, type) => {
             let key = KEYS[keyCode]
             if (key) {
-                if (type === 'add') {
-                    this.user.addMoving(key)
+                if (key == 'fire') {
+                    this.user.fire()
                 } else {
-                    this.user.removeMoving(key)
+                    if (type === 'down') {
+                        this.user.addMoving(key)
+                    } else {
+                        this.user.removeMoving(key)
+                    }
                 }
             }
         }
 
         window.addEventListener("keydown", e => {
-            onKeyEvent(e, 'add')
+            onKeyEvent(e, 'down')
         })
         window.addEventListener("keyup", e => {
-            onKeyEvent(e, 'remove')
+            onKeyEvent(e, 'up')
         })
     },
 
@@ -165,6 +176,7 @@ const Game = {
     },
 
     update() {
+        this.bulling.update()
         this.user.update()
         this.enemies.forEach(enemy => {
             enemy.update()
@@ -179,6 +191,8 @@ const Game = {
             enemy.render()
         })
         this.maps.renderMap()
+
+        this.bulling.render()
     },
 
     backgroundRender() {
