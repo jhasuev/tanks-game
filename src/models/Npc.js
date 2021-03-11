@@ -94,7 +94,6 @@ function Npc(game, type = 'user') {
     this.addMoving = (direction) => {
         if (this.supportedDirections.includes(direction) && !this.directions.includes(direction)) {
             this.directions.unshift(direction)
-            this.direction = direction
         }
     }
 
@@ -108,9 +107,11 @@ function Npc(game, type = 'user') {
         this.dx = velocities.dx
         this.dy = velocities.dy
 
-        if (this.directions.length && !this.checkCollide()) {
-            this.x += this.dx
-            this.y += this.dy
+        if (this.directions.length) {
+            if (!this.checkCollide()) {
+                this.x += this.dx
+                this.y += this.dy
+            }
             this.direction = this.directions[0]
         }
     }
