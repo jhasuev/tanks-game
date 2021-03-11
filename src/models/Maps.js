@@ -47,7 +47,7 @@ function Maps(game) {
 
     this.create = () => {
         return new Promise(resolve => {
-            let currentMap = this.getCurrentMap()
+            let currentMap = JSON.parse(JSON.stringify(this.getCurrentMap()))
             this.map = currentMap.map
             this.user = currentMap.user
             this.enemy = currentMap.enemy
@@ -64,7 +64,17 @@ function Maps(game) {
 
     this.getCurrentMap = () => maps[this.level]
 
+    this.getCurrentLevel = () => this.level + 1
+
     this.getBasePosition = () => this.getCurrentMap()?.base
+
+    this.getEnemiesLeft = () => this.enemy.total
+
+    this.killEnemy = () => {
+        --this.enemy.total
+    }
+
+    this.getUserLives = () => this.user.lives
 
     this.setPosition = () => {
         this.height = this.map.length * this.cellSize

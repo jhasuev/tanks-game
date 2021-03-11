@@ -89,6 +89,7 @@
     "user": {
       "col": 24,
       "row": 23,
+      "lives": 3,
       "direction": "up"
     },
     "base": {

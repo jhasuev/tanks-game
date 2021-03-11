@@ -8,6 +8,8 @@ import Npc from "./models/Npc.js"
 import Bulling from "./models/Bulling.js"
 // База игрока (сердечко -_-)
 import Base from "./models/Base.js"
+// Вся отображаемая информация на канвасе
+import Info from "./models/Info";
 // вспомогатели
 import {random, KEYS} from "./helper"
 
@@ -19,20 +21,22 @@ const Game = {
     height: undefined,
     dimensions: {
         max: {
-            width: 600,
+            width: 1000,
             height: 600,
         },
         min: {
-            width: 600,
-            height: 600,
+            width: 23 * 26 + 100,
+            height: 23 * 25,
         },
     },
 
     sprites: {
         user: undefined,
         enemy: undefined,
+        enemyLogo: undefined,
         base: undefined,
         baseBroken: undefined,
+        heart: undefined,
         bullet: undefined,
         burning: undefined,
 
@@ -48,6 +52,7 @@ const Game = {
     base: undefined, // База игрока
     maps: undefined, // объект карты
     bulling: undefined, // стрельба + взрывы
+    info: undefined, // вывод информации
 
     start() {
         // this.preload() - загружает все спрайты
@@ -58,6 +63,7 @@ const Game = {
             this.bulling = new Bulling(this)
             this.bulling.init()
             this.base = new Base(this)
+            this.info = new Info(this)
 
             // this.maps.create() - создает карту и размешает её сразу посередине канваса
             this.maps.create().then(() => {
@@ -67,6 +73,8 @@ const Game = {
                 this.createEnemies()
                 // инициализируем базу игрока
                 this.base.init()
+                // инициализируем информацию
+                this.info.init()
             })
             // запускаем обновлятор ))
             this.loop()
@@ -224,6 +232,7 @@ const Game = {
         this.bulling.render()
         this.base.render()
         this.maps.renderMap()
+        this.info.render()
     },
 
     backgroundRender() {

@@ -110,6 +110,7 @@ function Bulling(game) {
                 npcList.forEach(npc => {
                     if (checkCollide(npc, bullet) && npc.type !== bullet.owner) {
                         bullet.remove = true
+                        this.game.maps.killEnemy()
                     }
                 })
             }
