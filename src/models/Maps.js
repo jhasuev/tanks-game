@@ -47,18 +47,23 @@ function Maps(game) {
 
     this.create = () => {
         return new Promise(resolve => {
-            this.map = maps[this.level].map
-            this.user = maps[this.level].user
-            this.enemy = maps[this.level].enemy
+            let currentMap  = maps[this.level]
+            this.map = currentMap.map
+            this.user = currentMap.user
+            this.enemy = currentMap.enemy
 
-            this.height = this.map.length * this.cellSize
-            this.width = this.map[0].length * this.cellSize
-
-            this.y = this.game.height / 2 - this.height / 2
-            this.x = this.game.width / 2 - this.width / 2
+            this.setPosition()
 
             resolve(this)
         })
+    }
+
+    this.setPosition = () => {
+        this.height = this.map.length * this.cellSize
+        this.width = this.map[0].length * this.cellSize
+
+        this.y = this.game.height / 2 - this.height / 2
+        this.x = this.game.width / 2 - this.width / 2
     }
 
     this.renderMap = () => {
