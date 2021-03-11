@@ -94,6 +94,7 @@ function Npc(game, type = 'user') {
     this.addMoving = (direction) => {
         if (this.supportedDirections.includes(direction) && !this.directions.includes(direction)) {
             this.directions.unshift(direction)
+            this.direction = direction
         }
     }
 
