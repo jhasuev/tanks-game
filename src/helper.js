@@ -4,10 +4,15 @@ export function random(min, max) {
 
 export const KEYS = {
     37: 'left',
+    65: 'left',
     38: 'up',
+    87: 'up',
     39: 'right',
+    68: 'right',
     40: 'down',
+    83: 'down',
     32: 'fire',
+    13: 'fire',
 }
 
 export const getReverseDirection = (direction) => {
