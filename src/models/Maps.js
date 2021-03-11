@@ -74,6 +74,44 @@ function Maps(game) {
         --this.enemy.total
     }
 
+    this.checkTilesCrossing = (tilesFirst, tilesSecond) => {
+        let crossing = false
+
+        for (let first of tilesFirst) {
+            for (let second of tilesSecond) {
+                if (first.row === second.row || first.col === second.col) {
+                    crossing = true
+                    break;
+                }
+            }
+            if (crossing) break;
+        }
+
+        return crossing
+    }
+
+    this.getAroundCols = (y, x, height, width) => {
+        let rowStart = this.getRowOn(y)
+        let rowEnd = this.getRowOn(y + height - .001)
+        let colStart = this.getColOn(x)
+        let colEnd = this.getColOn(x + width - .001)
+
+        rowStart = Math.max(rowStart, 0)
+        colStart = Math.max(colStart, 0)
+
+        rowEnd = Math.min(rowEnd, this.map.length - 1)
+        colEnd = Math.min(colEnd, this.map[0].length - 1)
+
+        let cols = []
+        for (let row = rowStart; row <= rowEnd; row++) {
+            for (let col = colStart; col <= colEnd; col++) {
+                cols.push({row, col, cell: this.map[row][col]})
+            }
+        }
+
+        return cols
+    }
+
     this.getUserLives = () => this.user.lives
 
     this.setPosition = () => {

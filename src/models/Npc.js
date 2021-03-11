@@ -28,6 +28,9 @@ function Npc(game, type = 'user') {
 
     this.init = () => {
         this.animate()
+        if (type === 'enemy') {
+            this.randomizeShooting()
+        }
     }
 
     this.canGoTo = (direction) => {
@@ -81,6 +84,25 @@ function Npc(game, type = 'user') {
             }
             this.lastDirectionChanged = Date.now()
         }
+    }
+
+    this.randomizeShooting = () => {
+        setInterval(() => {
+            if(this.checkNpcCrosses() || this.checkNpcAndBaseCrosses() || Math.random() > .8) {
+                this.fire()
+            }
+        }, 900)
+    }
+
+    this.checkNpcCrosses = () => {
+        return this.game.maps.checkTilesCrossing(this.getAroundCols(), this.game.user.getAroundCols())
+    }
+
+    this.checkNpcAndBaseCrosses = () => {
+        return this.game.maps.checkTilesCrossing(
+            this.getAroundCols(),
+            this.game.maps.getAroundCols(this.game.base.y, this.game.base.x, this.game.base.height, this.game.base.width)
+        )
     }
 
     this.animate = () => {
@@ -154,25 +176,7 @@ function Npc(game, type = 'user') {
             y += this.dy
         }
 
-        let rowStart = this.game.maps.getRowOn(y)
-        let rowEnd = this.game.maps.getRowOn(y + this.height - .001)
-        let colStart = this.game.maps.getColOn(x)
-        let colEnd = this.game.maps.getColOn(x + this.width - .001)
-
-        rowStart = Math.max(rowStart, 0)
-        colStart = Math.max(colStart, 0)
-
-        rowEnd = Math.min(rowEnd, this.game.maps.map.length - 1)
-        colEnd = Math.min(colEnd, this.game.maps.map[0].length - 1)
-
-        let cols = []
-        for (let row = rowStart; row <= rowEnd; row++) {
-            for (let col = colStart; col <= colEnd; col++) {
-                cols.push({row, col, cell: this.game.maps.map[row][col]})
-            }
-        }
-
-        return cols
+        return this.game.maps.getAroundCols(y, x, this.height, this.width)
     }
 
     this.fire = () => {

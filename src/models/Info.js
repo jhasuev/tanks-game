@@ -5,6 +5,7 @@ function Info(game) {
     this.iconSize = 10
     this.iconRightOffset = 5
     this.infoLeftOffset = 5
+    this.infoTopOffset = 10
 
     this.init = () => {
         this.game.ctx.font = `${this.fz}px Arial`
@@ -36,7 +37,7 @@ function Info(game) {
         }
 
         this.info.forEach((block, blockIndex) => {
-            let y = this.game.maps.y + blockIndex * (this.fz + this.linesOffset)
+            let y = this.game.maps.y + blockIndex * (this.fz + this.linesOffset) + this.infoTopOffset
 
             if (block.type === 'icon') {
                 this.game.ctx.drawImage(block.icon, this.infoLeftOffset, y, this.iconSize, this.iconSize)
