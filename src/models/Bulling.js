@@ -85,11 +85,16 @@ function Bulling(game) {
 
             // 2) пуля попала в блок/тайл
             if (!bullet.remove) {
-                let colStart = this.game.maps.getCellOn(bullet.y, bullet.x)
-                let colEnd = this.game.maps.getCellOn(bullet.y + this.bulling.height, bullet.x + this.bulling.width)
-                if ((colStart && !colStart.bulling) || (colEnd && !colEnd.bulling)) {
-                    this.onTileStrike(colStart)
-                    this.onTileStrike(colEnd)
+                let col1 = this.game.maps.getCellOn(bullet.y, bullet.x)
+                let col2 = this.game.maps.getCellOn(bullet.y, bullet.x + this.bulling.width)
+                let col3 = this.game.maps.getCellOn(bullet.y + this.bulling.height, bullet.x)
+                let col4 = this.game.maps.getCellOn(bullet.y + this.bulling.height, bullet.x + this.bulling.width)
+
+                if (this.canShot(col1) || this.canShot(col2) || this.canShot(col3) || this.canShot(col4)) {
+                    this.onTileStrike(col1)
+                    this.onTileStrike(col2)
+                    this.onTileStrike(col3)
+                    this.onTileStrike(col4)
 
                     bullet.remove = true
                 }
@@ -118,6 +123,10 @@ function Bulling(game) {
         if (shouldClearBullets) {
             this.clearBullets()
         }
+    }
+
+    this.canShot = (col) => {
+        return col && !col.bulling
     }
 
     this.onTileStrike = col => {
