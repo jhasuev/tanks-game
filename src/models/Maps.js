@@ -3,14 +3,14 @@ import maps from "../maps.json";
 function Maps(game) {
     this.game = game;
     this.map = undefined;
-    this.user = undefined;
-    this.enemy = undefined;
+    this.user = undefined; // информация об игроке (позиция, направления)
+    this.enemy = undefined; // информация о врагов (позиция, направления)
     this.width = undefined;
     this.height = undefined;
     this.y = undefined;
     this.x = undefined;
     this.cellSize = 23; // original size of cell is "17", the other pixels are offsets
-    this.level = 0;
+    this.level = 1;
     this.cellTypes = {
         0: { // 0 - ничего (пустая зона)
             walkable: true,
@@ -47,7 +47,7 @@ function Maps(game) {
 
     this.create = () => {
         return new Promise(resolve => {
-            let currentMap  = maps[this.level]
+            let currentMap = this.getCurrentMap()
             this.map = currentMap.map
             this.user = currentMap.user
             this.enemy = currentMap.enemy
@@ -57,6 +57,14 @@ function Maps(game) {
             resolve(this)
         })
     }
+
+    this.getXPositionOfCol = col => this.x + col * this.cellSize + (this.cellSize * 2) / 2
+
+    this.getYPositionOfCol = row => this.y + row * this.cellSize + (this.cellSize * 2) / 2
+
+    this.getCurrentMap = () => maps[this.level]
+
+    this.getBasePosition = () => this.getCurrentMap()?.base
 
     this.setPosition = () => {
         this.height = this.map.length * this.cellSize

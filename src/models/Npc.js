@@ -63,7 +63,7 @@ function Npc(game, type = 'user') {
     }
 
     this.randomizeMoving = () => {
-        if (this.lastDirectionChanged && (Date.now() - this.lastDirectionChanged) < 200) {
+        if (this.lastDirectionChanged && (Date.now() - this.lastDirectionChanged) < random(200, 3000)) {
             return;
         }
 
@@ -116,8 +116,8 @@ function Npc(game, type = 'user') {
     }
 
     this.setPositions = (row, col) => {
-        this.x = this.game.maps.x + col * this.game.maps.cellSize + (this.game.maps.cellSize * 2 - this.width) / 2
-        this.y = this.game.maps.y + row * this.game.maps.cellSize + (this.game.maps.cellSize * 2 - this.height) / 2
+        this.x = this.game.maps.getXPositionOfCol(col) - this.width / 2
+        this.y = this.game.maps.getYPositionOfCol(row) - this.height / 2
     }
 
     this.setDirection = direction => {

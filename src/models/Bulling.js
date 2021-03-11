@@ -114,6 +114,15 @@ function Bulling(game) {
                 })
             }
 
+
+            // 4) пуля попала на базу
+            if (!bullet.remove) {
+                if (checkCollide(this.game.base, bullet) && this.game.base.active) {
+                    bullet.remove = true
+                    this.game.base.kill()
+                }
+            }
+
             if (bullet.remove) {
                 shouldClearBullets = true
                 return this.burn(bullet.y + this.bulling.height / 2, bullet.x + this.bulling.width / 2)

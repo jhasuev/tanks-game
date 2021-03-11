@@ -1,9 +1,17 @@
+// основные стили
 import './styles/main.scss'
+// модель всех карт (там же определяются и размеры карты)
 import Maps from "./models/Maps.js"
+// NPC / общий и для врагов, и для игрока с некоторыми отличиями (пока только по цвету)
 import Npc from "./models/Npc.js"
+// вся стрельба + взрывы (все в одном объекте)
 import Bulling from "./models/Bulling.js"
+// База игрока (сердечко -_-)
+import Base from "./models/Base.js"
+// вспомогатели
 import {random, KEYS} from "./helper"
 
+// главный объект
 const Game = {
     canvas: undefined,
     ctx: undefined,
@@ -23,6 +31,7 @@ const Game = {
     sprites: {
         user: undefined,
         enemy: undefined,
+        base: undefined,
         bullet: undefined,
         burning: undefined,
 
@@ -33,18 +42,32 @@ const Game = {
         grass: undefined,
     },
 
-    user: undefined,
-    maps: undefined,
-    bulling: undefined,
-    enemies: [],
+    user: undefined, // Npc игрока
+    enemies: [], // Npc врагов (список)
+    base: undefined, // База игрока
+    maps: undefined, // объект карты
+    bulling: undefined, // стрельба + взрывы
 
     start() {
+        // this.preload() - загружает все спрайты
         this.preload().then(() => {
             this.init()
+
+            this.maps = new Maps(this)
+            this.bulling = new Bulling(this)
+            this.bulling.init()
+            this.base = new Base(this)
+
+            // this.maps.create() - создает карту и размешает её сразу посередине канваса
             this.maps.create().then(() => {
+                // создаем игрока и размешаем его в нужное место, которое описано на карте
                 this.createUser()
+                // тоже создаем врагов и размешаем их на карте
                 this.createEnemies()
+                // инициализируем базу игрока
+                this.base.init()
             })
+            // запускаем обновлятор ))
             this.loop()
         })
     },
@@ -53,15 +76,20 @@ const Game = {
         this.canvas = document.getElementById("game")
         this.ctx = this.canvas.getContext("2d")
 
-        this.initDimensions()
+        // установка разрешения канваса/хоста
+        this.setDimensions()
+        // регистрация событий
         this.initEvents()
-
-        this.maps = new Maps(this)
-        this.bulling = new Bulling(this)
-        this.bulling.init()
     },
 
-    initDimensions() {
+    onWindowResize() {
+        clearTimeout(this.onWindowResizeTimer)
+        this.onWindowResizeTimer = setTimeout(() => {
+            location.reload()
+        }, 250)
+    },
+
+    setDimensions() {
         let data = {
             maxWidth: this.dimensions.max.width,
             maxHeight: this.dimensions.max.height,
@@ -71,33 +99,30 @@ const Game = {
             realHeight: innerHeight,
         }
 
-        this.fitWindow(data)
-    },
+        this.canvas.style.height = this.canvas.style.width = ""
 
-    fitWindow(data) {
         let ratioWidth = data.realWidth / data.realHeight
         let ratioHeight = data.realHeight / data.realWidth
 
-        if (ratioWidth > data.maxWidth / data.maxHeight) {
-            this.height = ratioHeight * data.maxHeight
-            this.height = Math.min(this.height, data.maxHeight)
-            this.height = Math.max(this.height, data.minHeight)
+        let height = ratioHeight * data.maxHeight
+        let width = ratioWidth * data.maxHeight
 
-            this.width = ratioWidth * this.height
-            this.canvas.style.height = ""
+        if (ratioWidth > data.maxWidth / data.maxHeight) {
+            height = Math.min(height, data.maxHeight)
+            height = Math.max(height, data.minHeight)
+
+            width = ratioWidth * height
             this.canvas.style.width = "100%"
         } else {
-            this.width = ratioWidth * data.maxHeight
-            this.width = Math.min(this.width, data.maxWidth)
-            this.width = Math.max(this.width, data.minWidth)
+            width = Math.min(width, data.maxWidth)
+            width = Math.max(width, data.minWidth)
 
-            this.height = ratioHeight * this.width
-            this.canvas.style.width = ""
+            height = ratioHeight * width
             this.canvas.style.height = "100%"
         }
 
-        this.canvas.width = this.width
-        this.canvas.height = this.height
+        this.canvas.width = this.width = width
+        this.canvas.height = this.height = height
     },
 
     createUser() {
@@ -128,7 +153,7 @@ const Game = {
         const onKeyEvent = ({keyCode}, type) => {
             let key = KEYS[keyCode]
             if (key) {
-                if (key == 'fire') {
+                if (key === 'fire') {
                     this.user.fire()
                 } else {
                     if (type === 'down') {
@@ -143,8 +168,13 @@ const Game = {
         window.addEventListener("keydown", e => {
             onKeyEvent(e, 'down')
         })
+
         window.addEventListener("keyup", e => {
             onKeyEvent(e, 'up')
+        })
+
+        window.addEventListener("resize", () => {
+            this.onWindowResize()
         })
     },
 
@@ -186,13 +216,13 @@ const Game = {
     render() {
         this.backgroundRender()
         this.maps.renderBackground()
-        this.user.render()
         this.enemies.forEach(enemy => {
             enemy.render()
         })
-        this.maps.renderMap()
-
+        this.user.render()
         this.bulling.render()
+        this.base.render()
+        this.maps.renderMap()
     },
 
     backgroundRender() {
