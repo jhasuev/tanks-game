@@ -124,6 +124,17 @@ function Bulling(game) {
                 }
             }
 
+
+            // 5) пуля попала в другую пулю
+            if (!bullet.remove) {
+                for (let anotherBullet of this.bulling.list) {
+                    if (checkCollide(anotherBullet, bullet) && bullet !== anotherBullet) {
+                        bullet.remove = true
+                        break
+                    }
+                }
+            }
+
             if (bullet.remove) {
                 shouldClearBullets = true
                 return this.burn(bullet.y + this.bulling.height / 2, bullet.x + this.bulling.width / 2)
