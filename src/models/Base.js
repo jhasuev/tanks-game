@@ -17,10 +17,13 @@ function Npc(game, type = 'user') {
     }
 
     this.animate = () => {
-        setInterval(() => {
-            if (++this.frame >= this.frames) {
-                this.frame = 0
-            }
+        if (++this.frame >= this.frames) {
+            this.frame = 0
+        }
+
+        clearTimeout(this.animateTimer)
+        this.animateTimer = setTimeout(() => {
+            this.animate()
         }, 1000 / 12)
     }
 

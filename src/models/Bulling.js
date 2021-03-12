@@ -101,7 +101,7 @@ function Bulling(game) {
             }
 
 
-            // 3) пуля сбила врага
+            // 3) пуля сбила врага или игрока
             if (!bullet.remove) {
                 let npcList = [
                     ...this.game.enemies,
@@ -109,8 +109,16 @@ function Bulling(game) {
                 ]
                 npcList.forEach(npc => {
                     if (checkCollide(npc, bullet) && npc.type !== bullet.owner) {
+                        if (!npc.isAlive()) {
+                            return
+                        }
+
                         bullet.remove = true
-                        this.game.maps.killEnemy()
+                        if (npc.type === 'enemy') {
+                            this.game.killEnemy(npc)
+                        } else {
+                            this.game.killUser(npc)
+                        }
                     }
                 })
             }

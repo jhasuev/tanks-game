@@ -10,7 +10,7 @@ function Maps(game) {
     this.y = undefined;
     this.x = undefined;
     this.cellSize = 23; // original size of cell is "17", the other pixels are offsets
-    this.level = 1;
+    this.level = 0;
     this.cellTypes = {
         0: { // 0 - ничего (пустая зона)
             walkable: true,
@@ -46,16 +46,19 @@ function Maps(game) {
     this.bgPattern = undefined;
 
     this.create = () => {
-        return new Promise(resolve => {
-            let currentMap = JSON.parse(JSON.stringify(this.getCurrentMap()))
-            this.map = currentMap.map
-            this.user = currentMap.user
-            this.enemy = currentMap.enemy
+        let currentMap = JSON.parse(JSON.stringify(this.getCurrentMap()))
+        this.map = currentMap.map
+        this.user = currentMap.user
+        this.enemy = currentMap.enemy
 
-            this.setPosition()
+        this.setPosition()
+    }
 
-            resolve(this)
-        })
+    this.levelUp = () => {
+        this.level += 1
+        if (this.level >= maps.length - 1) {
+            this.level = maps.length - 1
+        }
     }
 
     this.getXPositionOfCol = col => this.x + col * this.cellSize + (this.cellSize * 2) / 2
@@ -69,10 +72,6 @@ function Maps(game) {
     this.getBasePosition = () => this.getCurrentMap()?.base
 
     this.getEnemiesLeft = () => this.enemy.total
-
-    this.killEnemy = () => {
-        --this.enemy.total
-    }
 
     this.checkTilesCrossing = (tilesFirst, tilesSecond) => {
         let crossing = false
@@ -113,6 +112,10 @@ function Maps(game) {
     }
 
     this.getUserLives = () => this.user.lives
+
+    this.removeUserLive = () => {
+        this.user.lives -= 1
+    }
 
     this.setPosition = () => {
         this.height = this.map.length * this.cellSize

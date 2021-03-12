@@ -30,6 +30,7 @@
     "user": {
       "col": 12,
       "row": 19,
+      "lives": 5,
       "direction": "up"
     },
     "base": {
@@ -54,7 +55,7 @@
           "direction": "down"
         }
       ],
-      "total": 20,
+      "total": 4,
       "max": 3
     }
   },
@@ -114,7 +115,7 @@
           "direction": "down"
         }
       ],
-      "total": 20,
+      "total": 5,
       "max": 3
     }
   }

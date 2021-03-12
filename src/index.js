@@ -34,6 +34,8 @@ const Game = {
         user: undefined,
         enemy: undefined,
         enemyLogo: undefined,
+        deadNpc: undefined,
+        npcArmor: undefined,
         base: undefined,
         baseBroken: undefined,
         heart: undefined,
@@ -58,26 +60,15 @@ const Game = {
         // this.preload() - загружает все спрайты
         this.preload().then(() => {
             this.init()
+            this.createModels()
+            this.startLevel()
 
-            this.maps = new Maps(this)
-            this.bulling = new Bulling(this)
-            this.bulling.init()
-            this.base = new Base(this)
-            this.info = new Info(this)
-
-            // this.maps.create() - создает карту и размешает её сразу посередине канваса
-            this.maps.create().then(() => {
-                // создаем игрока и размешаем его в нужное место, которое описано на карте
-                this.createUser()
-                // тоже создаем врагов и размешаем их на карте
-                this.createEnemies()
-                // инициализируем базу игрока
-                this.base.init()
-                // инициализируем информацию
-                this.info.init()
-            })
             // запускаем обновлятор ))
             this.loop()
+
+            setTimeout(() => {
+                this.userWin()
+            }, 1111)
         })
     },
 
@@ -134,13 +125,98 @@ const Game = {
         this.canvas.height = this.height = height
     },
 
-    createUser() {
-        this.user = this.createNewNpc('user', this.maps.user)
+    setUserDefaultPosition() {
+        this.user.setPositions(this.maps.user.row, this.maps.user.col)
+        this.user.setDirection(this.maps.user.direction)
     },
 
     createEnemies() {
+        if (this.enemies.length) {
+            this.enemies.forEach(enemy => this.destroyModel(enemy))
+            this.enemies = []
+        }
+
         for (let i = 0; i < this.maps.enemy.max; i++) {
-            this.enemies.push(this.createNewNpc('enemy', this.maps.enemy.positions[i]))
+            this.addNewEnemy(this.maps.enemy.positions[i])
+        }
+    },
+
+    addNewEnemy(position = undefined) {
+        this.enemies.push(this.createNewNpc('enemy', position))
+    },
+
+    killEnemy(npc) {
+        npc.alive = false
+
+        if (this.enemies.length <= this.maps.enemy.total) {
+            this.addNewEnemy()
+        }
+
+        if (this.maps.enemy.total >= 0) {
+            this.maps.enemy.total -= 1
+        }
+
+        if (this.maps.enemy.total <= 0) {
+            this.userWin()
+        }
+    },
+
+    userWin() {
+        console.log(1)
+        this.maps.levelUp()
+        this.startLevel()
+    },
+
+    createModels() {
+        this.maps = new Maps(this)
+        this.bulling = new Bulling(this)
+        this.base = new Base(this)
+        this.info = new Info(this)
+
+        // инициализация моделей
+        this.bulling.init()
+    },
+
+    destroyModel(model) {
+        for (let key in model) delete model[key]
+    },
+
+    startLevel() {
+        // this.maps.create() - создает карту и размешает её сразу посередине канваса
+        this.maps.create()
+
+        // создаем игрока и размешаем его в нужное место, которое описано на карте
+        if (!this.user) {
+            this.user = this.createNewNpc('user', this.maps.user)
+        } else {
+            this.setUserDefaultPosition()
+        }
+
+        // тоже создаем врагов и размешаем их на карте
+        this.createEnemies()
+
+        // инициализируем базу игрока
+        this.base.init()
+
+        // инициализируем информацию
+        this.info.init()
+
+    },
+
+    userLost() {
+    },
+
+    killUser(npc) {
+        if (npc.hasArmor()) return;
+
+        if (this.maps.getUserLives() > 0) {
+            this.maps.removeUserLive()
+            this.setUserDefaultPosition()
+            npc.setArmor()
+        }
+
+        if (this.maps.getUserLives() <= 0) {
+            this.userLost()
         }
     },
 

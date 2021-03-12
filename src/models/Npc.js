@@ -7,12 +7,18 @@ function Npc(game, type = 'user') {
     this.y = 110
     this.dx = 0
     this.dy = 0
-    this.velocity = 1
+    this.velocity = 1.5
     this.width = 34
     this.height = 34
+    this.armor = {
+        state: false,
+        frames: 3,
+        frame: 0,
+    }
 
     this.frame = 0
     this.frames = 3
+    this.alive = true
 
     this.supportedDirections = ['left', 'up', 'right', 'down']
     this.directions = []
@@ -30,6 +36,10 @@ function Npc(game, type = 'user') {
         this.animate()
         if (type === 'enemy') {
             this.randomizeShooting()
+        }
+
+        if (type === 'user') {
+            this.setArmor()
         }
     }
 
@@ -87,9 +97,16 @@ function Npc(game, type = 'user') {
     }
 
     this.randomizeShooting = () => {
-        setInterval(() => {
-            if(this.checkNpcCrosses() || this.checkNpcAndBaseCrosses() || Math.random() > .8) {
-                this.fire()
+        if (!this.isAlive()) {
+            return
+        }
+
+        if (this.checkNpcCrosses() || this.checkNpcAndBaseCrosses() || Math.random() > .8) {
+            this.fire()
+        }
+        setTimeout(() => {
+            if (this.randomizeShooting) {
+                this.randomizeShooting()
             }
         }, 900)
     }
@@ -106,9 +123,17 @@ function Npc(game, type = 'user') {
     }
 
     this.animate = () => {
-        setInterval(() => {
-            if (this.directions.length && ++this.frame >= this.frames) {
-                this.frame = 0
+        if (this.directions.length && ++this.frame >= this.frames) {
+            this.frame = 0
+        }
+
+        if (this.armor.state && ++this.armor.frame >= this.armor.frames) {
+            this.armor.frame = 0
+        }
+
+        setTimeout(() => {
+            if (this.animate) {
+                this.animate()
             }
         }, 1000 / 24)
     }
@@ -212,9 +237,14 @@ function Npc(game, type = 'user') {
     }
 
     this.update = () => {
+        if (!this.isAlive()) {
+            return
+        }
+
         if (this.type === 'enemy') {
             this.randomizeMoving()
         }
+
         this.move()
     }
 
@@ -222,21 +252,73 @@ function Npc(game, type = 'user') {
         return this.supportedDirections[random(0, this.supportedDirections.length)]
     }
 
+    this.isAlive = () => this.alive
+
     this.render = () => {
         let sprite = this.game.sprites[this.type]
+        let frames = this.frames
+        let frame = this.frame
+
+        if (!this.isAlive()) {
+            sprite = this.game.sprites['deadNpc']
+            frame = 0
+            frames = 1
+        }
+
         if (!sprite) return;
 
         let imageWidth = sprite.width
         let imageHeight = sprite.height
 
-        let imageFrameStart = imageWidth / this.frames * this.frame
-        let imageFrameEnd = imageWidth / this.frames
+        let imageFrameStart = imageWidth / frames * frame
+        let imageFrameEnd = imageWidth / frames
 
         this.game.ctx.save()
         this.game.ctx.translate(this.x + (this.width / 2), this.y + (this.height / 2))
         this.game.ctx.rotate(this.angles[this.direction] * Math.PI / 180)
         this.game.ctx.drawImage(sprite, imageFrameStart, 0, imageFrameEnd, imageHeight, this.width / -2, this.height / -2, this.width, this.height)
+
+        if (this.armor.state && this.isAlive()) {
+            this.renderArmor()
+        }
+
         this.game.ctx.restore()
+    }
+
+    this.hasArmor = () => this.armor.state
+
+    this.turnOnArmor = () => {
+        this.armor.state = true
+    }
+
+    this.turnOffArmor = () => {
+        this.armor.state = false
+    }
+
+    this.setArmor = () => {
+        this.turnOnArmor()
+        clearTimeout(this.setArmorTimer)
+        this.setArmorTimer = setTimeout(() => {
+            this.turnOffArmor()
+        }, 3000)
+    }
+
+    this.renderArmor = () => {
+        const sprite = this.game.sprites.npcArmor
+
+        this.game.ctx.drawImage(
+            sprite,
+
+            sprite.width / this.armor.frames * this.armor.frame,
+            0,
+            sprite.width / this.armor.frames,
+            sprite.height,
+
+            this.width / -2,
+            this.height / -2,
+            this.width,
+            this.height
+        )
     }
 }
 

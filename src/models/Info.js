@@ -7,10 +7,6 @@ function Info(game) {
     this.infoLeftOffset = 5
     this.infoTopOffset = 10
 
-    this.init = () => {
-        this.game.ctx.font = `${this.fz}px Arial`
-    }
-
     this.info = [
         {
             icon: this.game.sprites.enemyLogo,
@@ -28,6 +24,10 @@ function Info(game) {
             type: "text",
         },
     ]
+
+    this.init = () => {
+        this.game.ctx.font = `${this.fz}px Arial`
+    }
 
     this.render = () => {
         let infos = {
