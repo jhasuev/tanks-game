@@ -79,16 +79,16 @@ function Bulling(game) {
 
         this.bulling.list.forEach(bullet => {
             // 1) пуля за границей
-            if (!checkCollide(bullet, this.game.maps)) {
+            if (!checkCollide(bullet, this.game.levels)) {
                 bullet.remove = true
             }
 
             // 2) пуля попала в блок/тайл
             if (!bullet.remove) {
-                let col1 = this.game.maps.getCellOn(bullet.y, bullet.x)
-                let col2 = this.game.maps.getCellOn(bullet.y, bullet.x + this.bulling.width)
-                let col3 = this.game.maps.getCellOn(bullet.y + this.bulling.height, bullet.x)
-                let col4 = this.game.maps.getCellOn(bullet.y + this.bulling.height, bullet.x + this.bulling.width)
+                let col1 = this.game.levels.getCellOn(bullet.y, bullet.x)
+                let col2 = this.game.levels.getCellOn(bullet.y, bullet.x + this.bulling.width)
+                let col3 = this.game.levels.getCellOn(bullet.y + this.bulling.height, bullet.x)
+                let col4 = this.game.levels.getCellOn(bullet.y + this.bulling.height, bullet.x + this.bulling.width)
 
                 if (this.canShot(col1) || this.canShot(col2) || this.canShot(col3) || this.canShot(col4)) {
                     this.onTileStrike(col1)
@@ -160,7 +160,7 @@ function Bulling(game) {
 
     this.onTileStrike = col => {
         if (col && !col.bulling && !col.armor) {
-            this.game.maps.map[col.row][col.col] = 0
+            this.game.levels.map[col.row][col.col] = 0
         }
     }
 

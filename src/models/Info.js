@@ -31,13 +31,13 @@ function Info(game) {
 
     this.render = () => {
         let infos = {
-            enemies: "x " + this.game.maps.getEnemiesLeft(),
-            lives: "x " + this.game.maps.getUserLives(),
-            level: this.game.maps.getCurrentLevel(),
+            enemies: "x " + this.game.levels.getEnemiesLeft(),
+            lives: "x " + this.game.levels.getUserLives(),
+            level: this.game.levels.getCurrentLevel(),
         }
 
         this.info.forEach((block, blockIndex) => {
-            let y = this.game.maps.y + blockIndex * (this.fz + this.linesOffset) + this.infoTopOffset
+            let y = this.game.levels.y + blockIndex * (this.fz + this.linesOffset) + this.infoTopOffset
 
             if (block.type === 'icon') {
                 this.game.ctx.drawImage(block.icon, this.infoLeftOffset, y, this.iconSize, this.iconSize)

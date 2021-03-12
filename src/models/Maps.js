@@ -1,6 +1,6 @@
 import maps from "../maps.json";
 
-function Maps(game) {
+export default function Levels(game) {
     this.game = game;
     this.map = undefined;
     this.user = undefined; // информация об игроке (позиция, направления)
@@ -197,5 +197,3 @@ function Maps(game) {
         return Math.floor((x - this.x) / this.cellSize)
     }
 }
-
-export default Maps

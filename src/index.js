@@ -1,7 +1,7 @@
 // основные стили
 import './styles/main.scss'
 // модель всех карт (там же определяются и размеры карты)
-import Maps from "./models/Maps.js"
+import Levels from "./models/Maps.js"
 // NPC / общий и для врагов, и для игрока с некоторыми отличиями (пока только по цвету)
 import Npc from "./models/Npc.js"
 // вся стрельба + взрывы (все в одном объекте)
@@ -52,7 +52,7 @@ const Game = {
     user: undefined, // Npc игрока
     enemies: [], // Npc врагов (список)
     base: undefined, // База игрока
-    maps: undefined, // объект карты
+    levels: undefined, // объект карты
     bulling: undefined, // стрельба + взрывы
     info: undefined, // вывод информации
 
@@ -126,8 +126,8 @@ const Game = {
     },
 
     setUserDefaultPosition() {
-        this.user.setPositions(this.maps.user.row, this.maps.user.col)
-        this.user.setDirection(this.maps.user.direction)
+        this.user.setPositions(this.levels.user.row, this.levels.user.col)
+        this.user.setDirection(this.levels.user.direction)
     },
 
     createEnemies() {
@@ -136,8 +136,8 @@ const Game = {
             this.enemies = []
         }
 
-        for (let i = 0; i < this.maps.enemy.max; i++) {
-            this.addNewEnemy(this.maps.enemy.positions[i])
+        for (let i = 0; i < this.levels.enemy.max; i++) {
+            this.addNewEnemy(this.levels.enemy.positions[i])
         }
     },
 
@@ -148,27 +148,27 @@ const Game = {
     killEnemy(npc) {
         npc.alive = false
 
-        if (this.enemies.length <= this.maps.enemy.total) {
+        if (this.enemies.length <= this.levels.enemy.total) {
             this.addNewEnemy()
         }
 
-        if (this.maps.enemy.total >= 0) {
-            this.maps.enemy.total -= 1
+        if (this.levels.enemy.total >= 0) {
+            this.levels.enemy.total -= 1
         }
 
-        if (this.maps.enemy.total <= 0) {
+        if (this.levels.enemy.total <= 0) {
             this.userWin()
         }
     },
 
     userWin() {
         console.log(1)
-        this.maps.levelUp()
+        this.levels.levelUp()
         this.startLevel()
     },
 
     createModels() {
-        this.maps = new Maps(this)
+        this.levels = new Levels(this)
         this.bulling = new Bulling(this)
         this.base = new Base(this)
         this.info = new Info(this)
@@ -178,16 +178,20 @@ const Game = {
     },
 
     destroyModel(model) {
-        for (let key in model) delete model[key]
+        for (let key in model) {
+            if (model.hasOwnProperty(key)) {
+                delete model[key]
+            }
+        }
     },
 
     startLevel() {
-        // this.maps.create() - создает карту и размешает её сразу посередине канваса
-        this.maps.create()
+        // this.levels.create() - создает карту и размешает её сразу посередине канваса
+        this.levels.create()
 
         // создаем игрока и размешаем его в нужное место, которое описано на карте
         if (!this.user) {
-            this.user = this.createNewNpc('user', this.maps.user)
+            this.user = this.createNewNpc('user', this.levels.user)
         } else {
             this.setUserDefaultPosition()
         }
@@ -209,13 +213,13 @@ const Game = {
     killUser(npc) {
         if (npc.hasArmor()) return;
 
-        if (this.maps.getUserLives() > 0) {
-            this.maps.removeUserLive()
+        if (this.levels.getUserLives() > 0) {
+            this.levels.removeUserLive()
             this.setUserDefaultPosition()
             npc.setArmor()
         }
 
-        if (this.maps.getUserLives() <= 0) {
+        if (this.levels.getUserLives() <= 0) {
             this.userLost()
         }
     },
@@ -224,7 +228,7 @@ const Game = {
         let npc = new Npc(this, type)
 
         if (!position && type === 'enemy') {
-            position = this.maps.enemy.positions[random(0, this.maps.enemy.positions.length)]
+            position = this.levels.enemy.positions[random(0, this.levels.enemy.positions.length)]
         }
 
         npc.setPositions(position.row, position.col)
@@ -300,14 +304,14 @@ const Game = {
 
     render() {
         this.backgroundRender()
-        this.maps.renderBackground()
+        this.levels.renderBackground()
         this.enemies.forEach(enemy => {
             enemy.render()
         })
         this.user.render()
         this.bulling.render()
         this.base.render()
-        this.maps.renderMap()
+        this.levels.renderMap()
         this.info.render()
     },
 

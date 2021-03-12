@@ -28,10 +28,10 @@ function Npc(game, type = 'user') {
     }
 
     this.setPositions = () => {
-        let {row, col} = this.game.maps.getBasePosition()
+        let {row, col} = this.game.levels.getBasePosition()
 
-        this.x = this.game.maps.getXPositionOfCol(col) - this.width / 2
-        this.y = this.game.maps.getYPositionOfCol(row) - this.height / 2
+        this.x = this.game.levels.getXPositionOfCol(col) - this.width / 2
+        this.y = this.game.levels.getYPositionOfCol(row) - this.height / 2
     }
 
     this.kill = () => {

@@ -67,12 +67,12 @@ function Npc(game, type = 'user') {
 
             position.row = row
             position.col = col
-            position.cell = this.game.maps.getCell(row, col)
+            position.cell = this.game.levels.getCell(row, col)
 
             return position
         })
 
-        return !positions.some(col => !this.game.maps.isCellWalkable(col.cell))
+        return !positions.some(col => !this.game.levels.isCellWalkable(col.cell))
     }
 
     this.randomizeMoving = () => {
@@ -112,13 +112,13 @@ function Npc(game, type = 'user') {
     }
 
     this.checkNpcCrosses = () => {
-        return this.game.maps.checkTilesCrossing(this.getAroundCols(), this.game.user.getAroundCols())
+        return this.game.levels.checkTilesCrossing(this.getAroundCols(), this.game.user.getAroundCols())
     }
 
     this.checkNpcAndBaseCrosses = () => {
-        return this.game.maps.checkTilesCrossing(
+        return this.game.levels.checkTilesCrossing(
             this.getAroundCols(),
-            this.game.maps.getAroundCols(this.game.base.y, this.game.base.x, this.game.base.height, this.game.base.width)
+            this.game.levels.getAroundCols(this.game.base.y, this.game.base.x, this.game.base.height, this.game.base.width)
         )
     }
 
@@ -164,8 +164,8 @@ function Npc(game, type = 'user') {
     }
 
     this.setPositions = (row, col) => {
-        this.x = this.game.maps.getXPositionOfCol(col) - this.width / 2
-        this.y = this.game.maps.getYPositionOfCol(row) - this.height / 2
+        this.x = this.game.levels.getXPositionOfCol(col) - this.width / 2
+        this.y = this.game.levels.getYPositionOfCol(row) - this.height / 2
     }
 
     this.setDirection = direction => {
@@ -178,16 +178,16 @@ function Npc(game, type = 'user') {
 
         // коллизия по границам
         if (
-            x < this.game.maps.x
-            || x + this.width > this.game.maps.x + this.game.maps.width
-            || y < this.game.maps.y
-            || y + this.height > this.game.maps.y + this.game.maps.height
+            x < this.game.levels.x
+            || x + this.width > this.game.levels.x + this.game.levels.width
+            || y < this.game.levels.y
+            || y + this.height > this.game.levels.y + this.game.levels.height
         ) {
             return true
         }
 
         // коллизия по блокам
-        if (this.getAllCurrentCells().some(cell => !this.game.maps.isCellWalkable(cell))) {
+        if (this.getAllCurrentCells().some(cell => !this.game.levels.isCellWalkable(cell))) {
             return true
         }
     }
@@ -201,7 +201,7 @@ function Npc(game, type = 'user') {
             y += this.dy
         }
 
-        return this.game.maps.getAroundCols(y, x, this.height, this.width)
+        return this.game.levels.getAroundCols(y, x, this.height, this.width)
     }
 
     this.fire = () => {
