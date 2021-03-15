@@ -26,7 +26,7 @@ export default {
   bottom: 0;
   z-index: 2;
 
-  background-color: rgba(0, 0, 0, .9);
+  background-color: rgba(0, 0, 0, .75);
   color: #fff;
 }
 

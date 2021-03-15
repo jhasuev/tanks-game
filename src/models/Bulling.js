@@ -58,12 +58,14 @@ function Bulling(game) {
 
     this.burnAnimate = () => {
         let shouldClearBurnings = false
-        this.burning.list.forEach(burning => {
-            if (++burning.frame > this.burning.frames) {
-                shouldClearBurnings = true
-                burning.remove = true
-            }
-        })
+        if (this.game.running) {
+            this.burning.list.forEach(burning => {
+                if (++burning.frame > this.burning.frames) {
+                    shouldClearBurnings = true
+                    burning.remove = true
+                }
+            })
+        }
 
         setTimeout(() => {
             this.burnAnimate()

@@ -10,6 +10,7 @@ import Base from "./Base.js"
 import Info from "./Info";
 // вспомогатели
 import {random, KEYS} from "../helper"
+import emitter from "@/./eventHub"
 
 // главный объект
 function Game() {
@@ -54,13 +55,15 @@ function Game() {
     this.bulling = undefined // стрельба + взрывы
     this.info = undefined // вывод информации
 
+    this.running = false
+    this.started = false
+
     this.start = () => {
         // this.preload() - загружает все спрайты
         this.preload().then(() => {
-            console.log(1)
             this.init()
             this.createModels()
-            this.startLevel()
+            this.initModels()
 
             // запускаем обновлятор ))
             this.loop()
@@ -158,7 +161,6 @@ function Game() {
 
     this.userWin = () => {
         this.levels.levelUp()
-        this.startLevel()
     }
 
     this.createModels = () => {
@@ -166,7 +168,9 @@ function Game() {
         this.bulling = new Bulling(this)
         this.base = new Base(this)
         this.info = new Info(this)
+    }
 
+    this.initModels = () => {
         // инициализация моделей
         this.bulling.init()
     }
@@ -177,7 +181,9 @@ function Game() {
         }
     }
 
-    this.startLevel = () => {
+    this.startLevel = (level) => {
+        this.levels.setCurrentLevel(level)
+
         // this.levels.create() - создает карту и размешает её сразу посередине канваса
         this.levels.create()
 
@@ -197,6 +203,8 @@ function Game() {
         // инициализируем информацию
         this.info.init()
 
+        this.running = true
+        this.started = true
     }
 
     this.userLost = () => {
@@ -231,10 +239,16 @@ function Game() {
     }
 
     this.initEvents = () => {
-        const onKeyEvent = ({keyCode}, type) => {
-            let key = KEYS[keyCode]
+        const onKeyEvent = (e, type) => {
+            let key = KEYS[e.keyCode]
             if (key) {
-                if (key === 'fire') {
+                if (key === 'menu') {
+                    if (e.type === "keyup" && this.started) {
+                        emitter.emit("onmenutoggle", state => {
+                            this.running = !state
+                        })
+                    }
+                } else if (key === 'fire') {
                     this.user.fire()
                 } else {
                     if (type === 'down') {
@@ -287,20 +301,29 @@ function Game() {
     }
 
     this.update = () => {
+        if (!this.running) return;
+
         this.bulling.update()
-        this.user.update()
+        if (this.user) {
+            this.user.update()
+        }
+
         this.enemies.forEach(enemy => {
             enemy.update()
         })
     }
 
     this.render = () => {
+        if (!this.running) return;
+
         this.backgroundRender()
         this.levels.renderBackground()
         this.enemies.forEach(enemy => {
             enemy.render()
         })
-        this.user.render()
+        if (this.user) {
+            this.user.render()
+        }
         this.bulling.render()
         this.base.render()
         this.levels.renderMap()

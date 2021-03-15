@@ -12,6 +12,9 @@ function Npc(game, type = 'user') {
     this.height = 34
     this.armor = {
         state: false,
+        timer: 0,
+        timerStep: 10,
+        timerMax: 3000,
         frames: 3,
         frame: 0,
     }
@@ -101,9 +104,12 @@ function Npc(game, type = 'user') {
             return
         }
 
-        if (this.checkNpcCrosses() || this.checkNpcAndBaseCrosses() || Math.random() > .8) {
-            this.fire()
+        if (this.game.running) {
+            if (this.checkNpcCrosses() || this.checkNpcAndBaseCrosses() || Math.random() > .8) {
+                this.fire()
+            }
         }
+
         setTimeout(() => {
             if (this.randomizeShooting) {
                 this.randomizeShooting()
@@ -123,12 +129,14 @@ function Npc(game, type = 'user') {
     }
 
     this.animate = () => {
-        if (this.directions.length && ++this.frame >= this.frames) {
-            this.frame = 0
-        }
+        if (this.game.running) {
+            if (this.directions.length && ++this.frame >= this.frames) {
+                this.frame = 0
+            }
 
-        if (this.armor.state && ++this.armor.frame >= this.armor.frames) {
-            this.armor.frame = 0
+            if (this.armor.state && ++this.armor.frame >= this.armor.frames) {
+                this.armor.frame = 0
+            }
         }
 
         setTimeout(() => {
@@ -289,18 +297,27 @@ function Npc(game, type = 'user') {
 
     this.turnOnArmor = () => {
         this.armor.state = true
+        this.armor.timer = this.armor.timerMax
     }
 
     this.turnOffArmor = () => {
-        this.armor.state = false
+        this.armor.timer -= this.armor.timerStep
+        if (this.armor.timer <= 0) {
+            this.armor.state = false
+            this.armor.timer = 0
+            clearInterval(this.setArmorTimer)
+        }
     }
 
     this.setArmor = () => {
         this.turnOnArmor()
-        clearTimeout(this.setArmorTimer)
-        this.setArmorTimer = setTimeout(() => {
-            this.turnOffArmor()
-        }, 3000)
+
+        clearInterval(this.setArmorTimer)
+        this.setArmorTimer = setInterval(() => {
+            if (this.game.running) {
+                this.turnOffArmor()
+            }
+        }, this.armor.timerStep)
     }
 
     this.renderArmor = () => {

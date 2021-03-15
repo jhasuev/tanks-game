@@ -30,11 +30,13 @@ export default {
 .map {
   cursor: pointer;
   width: 120px;
-  margin: 15px;
+  margin: 10px;
 
   &-img {
     display: block;
-    height: 100px;
+    width: 100px;
+    height: 96px;
+    margin: auto;
     background-position: center;
     background-size: cover;
   }
@@ -47,6 +49,7 @@ export default {
     text-align: center;
     margin-top: 10px;
     word-break: break-word;
+    line-height: 1.2;
   }
 }
 

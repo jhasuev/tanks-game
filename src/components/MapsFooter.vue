@@ -2,8 +2,12 @@
   <footer class="maps-footer text-center">
     <div class="maps-footer-buttons">
       <button
-        class="maps-footer-buttons-item btn btn-primary"
-        :disabled="getSelectedMapIndex === -1"
+        class="maps-footer-buttons-item btn"
+        :class="{
+          'btn-primary': !canPlay,
+          'btn-secondary': canPlay,
+        }"
+        :disabled="canPlay"
         @click="onPlayClick"
       >Play
       </button>
@@ -21,6 +25,10 @@ export default {
     ...mapGetters([
       "getSelectedMapIndex",
     ]),
+
+    canPlay(){
+      return this.getSelectedMapIndex === -1
+    },
   },
   methods: {
     onPlayClick() {

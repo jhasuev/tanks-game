@@ -57,7 +57,8 @@ export default {
   &__list {
     list-style: none;
     padding: 0;
-    margin-top: 50px;
+    margin: 50px auto 0;
+    max-width: 777px;
 
     display: flex;
     flex-wrap: wrap;

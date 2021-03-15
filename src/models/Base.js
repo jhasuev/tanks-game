@@ -17,8 +17,10 @@ function Npc(game) {
     }
 
     this.animate = () => {
-        if (++this.frame >= this.frames) {
-            this.frame = 0
+        if (this.game.running) {
+            if (++this.frame >= this.frames) {
+                this.frame = 0
+            }
         }
 
         clearTimeout(this.animateTimer)

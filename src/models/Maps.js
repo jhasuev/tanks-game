@@ -69,9 +69,11 @@ export default function Levels(game) {
 
     this.getCurrentLevel = () => this.level + 1
 
+    this.setCurrentLevel = level => this.level = level
+
     this.getBasePosition = () => this.getCurrentMap()?.base
 
-    this.getEnemiesLeft = () => this.enemy.total
+    this.getEnemiesLeft = () => this.enemy?.total
 
     this.checkTilesCrossing = (tilesFirst, tilesSecond) => {
         let crossing = false
@@ -111,7 +113,7 @@ export default function Levels(game) {
         return cols
     }
 
-    this.getUserLives = () => this.user.lives
+    this.getUserLives = () => this.user?.lives
 
     this.removeUserLive = () => {
         this.user.lives -= 1
@@ -127,6 +129,8 @@ export default function Levels(game) {
 
     this.renderMap = () => {
         let spriteName = undefined
+
+        if (!this.map) return;
 
         this.map.forEach((row, rowIndex) => {
             row.forEach((col, colIndex) => {

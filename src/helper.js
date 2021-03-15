@@ -13,6 +13,7 @@ export const KEYS = {
     83: 'down',
     32: 'fire',
     13: 'fire',
+    27: 'menu',
 }
 
 export const getReverseDirection = (direction) => {

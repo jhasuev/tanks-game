@@ -1,5 +1,5 @@
 <template>
-  <Game onplay="onPlay()"/>
+  <Game/>
   <Menu v-if="menu"/>
 </template>
 
@@ -29,6 +29,14 @@ export default {
   created() {
     emitter.on("onplay", () => {
       this.onPlay()
+    })
+
+    emitter.on("onmenutoggle", (cb) => {
+      this.menu = !this.menu
+
+      if (cb) {
+        cb(this.menu)
+      }
     })
   },
   methods: {
