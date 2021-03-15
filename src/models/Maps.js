@@ -46,12 +46,19 @@ export default function Levels(game) {
     this.bgPattern = undefined;
 
     this.create = () => {
-        let currentMap = JSON.parse(JSON.stringify(this.getCurrentMap()))
-        this.map = currentMap.map
-        this.user = currentMap.user
-        this.enemy = currentMap.enemy
+        let map = this.getCurrentMap()
+        if (map) {
+            let currentMap = JSON.parse(JSON.stringify(map))
+            this.map = currentMap.map
+            this.user = currentMap.user
+            this.enemy = currentMap.enemy
 
-        this.setPosition()
+            this.setPosition()
+
+            return true
+        }
+
+        return false
     }
 
     this.levelUp = () => {

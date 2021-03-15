@@ -131,6 +131,10 @@ function Bulling(game) {
                 if (checkCollide(this.game.base, bullet) && this.game.base.active) {
                     bullet.remove = true
                     this.game.base.kill()
+
+                    setTimeout(() => {
+                        this.game.userLost()
+                    }, 200)
                 }
             }
 

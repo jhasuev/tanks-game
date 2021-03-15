@@ -57,6 +57,7 @@ function Game() {
 
     this.running = false
     this.started = false
+    this.ended = false
 
     this.start = () => {
         // this.preload() - загружает все спрайты
@@ -161,6 +162,28 @@ function Game() {
 
     this.userWin = () => {
         this.levels.levelUp()
+        this.startLevel(this.levels.level)
+        this.pauseToggle()
+        this.showMessage("You win")
+        this.ended = true
+    }
+
+    this.pauseToggle = () => {
+        if (this.ended) return;
+
+        emitter.emit("onmenutoggle", state => {
+            this.running = !state
+        })
+    }
+
+    this.showMessage = (msg) => {
+        emitter.emit("showMessage", msg)
+    }
+
+    this.userLost = () => {
+        this.pauseToggle()
+        this.ended = true
+        this.showMessage("You lost")
     }
 
     this.createModels = () => {
@@ -182,10 +205,15 @@ function Game() {
     }
 
     this.startLevel = (level) => {
+        this.ended = false
         this.levels.setCurrentLevel(level)
 
         // this.levels.create() - создает карту и размешает её сразу посередине канваса
-        this.levels.create()
+        let mapCreated = this.levels.create()
+
+        if (!mapCreated) {
+            this.running = false
+        }
 
         // создаем игрока и размешаем его в нужное место, которое описано на карте
         if (!this.user) {
@@ -205,9 +233,6 @@ function Game() {
 
         this.running = true
         this.started = true
-    }
-
-    this.userLost = () => {
     }
 
     this.killUser = (npc) => {
@@ -240,13 +265,13 @@ function Game() {
 
     this.initEvents = () => {
         const onKeyEvent = (e, type) => {
+            if (!this.started) return;
+
             let key = KEYS[e.keyCode]
             if (key) {
                 if (key === 'menu') {
-                    if (e.type === "keyup" && this.started) {
-                        emitter.emit("onmenutoggle", state => {
-                            this.running = !state
-                        })
+                    if (e.type === "keyup") {
+                        this.pauseToggle()
                     }
                 } else if (key === 'fire') {
                     this.user.fire()
