@@ -1,5 +1,5 @@
 <template>
-  <footer class="maps-footer text-center">
+  <footer class="maps-footer">
     <div class="maps-footer-buttons">
       <button
         class="maps-footer-buttons-item btn"
@@ -41,6 +41,7 @@ export default {
 <style lang="scss">
 
 .maps-footer {
+  text-align: center;
   &-buttons {
     &-item {
       margin-top: 30px;

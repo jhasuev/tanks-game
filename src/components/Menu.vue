@@ -1,6 +1,6 @@
 <template>
-  <div class="menu  p-5">
-    <h2 class="text-center mb-3">Select a map</h2>
+  <div class="menu">
+    <h2 class="menu__heading">Select a map</h2>
     <Maps/>
   </div>
 </template>
@@ -28,6 +28,13 @@ export default {
 
   background-color: rgba(0, 0, 0, .75);
   color: #fff;
+
+  padding: 30px;
+
+  &__heading {
+    text-align: center;
+    margin-bottom: 10px;
+  }
 }
 
 </style>
