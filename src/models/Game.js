@@ -12,12 +12,12 @@ import Info from "./Info";
 import {random, KEYS} from "../helper"
 
 // главный объект
-const Game = {
-    canvas: undefined,
-    ctx: undefined,
-    width: undefined,
-    height: undefined,
-    dimensions: {
+function Game() {
+    this.canvas = undefined
+    this.ctx = undefined
+    this.width = undefined
+    this.height = undefined
+    this.dimensions = {
         max: {
             width: 1000,
             height: 600,
@@ -26,9 +26,9 @@ const Game = {
             width: 23 * 26 + 100,
             height: 23 * 25,
         },
-    },
+    }
 
-    sprites: {
+    this.sprites = {
         user: undefined,
         enemy: undefined,
         enemyLogo: undefined,
@@ -45,32 +45,29 @@ const Game = {
         stone: undefined,
         water: undefined,
         grass: undefined,
-    },
+    }
 
-    user: undefined, // Npc игрока
-    enemies: [], // Npc врагов (список)
-    base: undefined, // База игрока
-    levels: undefined, // объект карты
-    bulling: undefined, // стрельба + взрывы
-    info: undefined, // вывод информации
+    this.user = undefined // Npc игрока
+    this.enemies = [] // Npc врагов (список)
+    this.base = undefined // База игрока
+    this.levels = undefined // объект карты
+    this.bulling = undefined // стрельба + взрывы
+    this.info = undefined // вывод информации
 
-    start() {
+    this.start = () => {
         // this.preload() - загружает все спрайты
         this.preload().then(() => {
+            console.log(1)
             this.init()
             this.createModels()
             this.startLevel()
 
             // запускаем обновлятор ))
             this.loop()
-
-            setTimeout(() => {
-                this.userWin()
-            }, 1111)
         })
-    },
+    }
 
-    init() {
+    this.init = () => {
         this.canvas = document.getElementById("game")
         this.ctx = this.canvas.getContext("2d")
 
@@ -78,16 +75,16 @@ const Game = {
         this.setDimensions()
         // регистрация событий
         this.initEvents()
-    },
+    }
 
-    onWindowResize() {
+    this.onWindowResize = () => {
         clearTimeout(this.onWindowResizeTimer)
         this.onWindowResizeTimer = setTimeout(() => {
             location.reload()
         }, 250)
-    },
+    }
 
-    setDimensions() {
+    this.setDimensions = () => {
         let data = {
             maxWidth: this.dimensions.max.width,
             maxHeight: this.dimensions.max.height,
@@ -121,14 +118,14 @@ const Game = {
 
         this.canvas.width = this.width = width
         this.canvas.height = this.height = height
-    },
+    }
 
-    setUserDefaultPosition() {
+    this.setUserDefaultPosition = () => {
         this.user.setPositions(this.levels.user.row, this.levels.user.col)
         this.user.setDirection(this.levels.user.direction)
-    },
+    }
 
-    createEnemies() {
+    this.createEnemies = () => {
         if (this.enemies.length) {
             this.enemies.forEach(enemy => this.destroyModel(enemy))
             this.enemies = []
@@ -137,13 +134,13 @@ const Game = {
         for (let i = 0; i < this.levels.enemy.max; i++) {
             this.addNewEnemy(this.levels.enemy.positions[i])
         }
-    },
+    }
 
-    addNewEnemy(position = undefined) {
+    this.addNewEnemy = (position = undefined) => {
         this.enemies.push(this.createNewNpc('enemy', position))
-    },
+    }
 
-    killEnemy(npc) {
+    this.killEnemy = (npc) => {
         npc.alive = false
 
         if (this.enemies.length <= this.levels.enemy.total) {
@@ -157,14 +154,14 @@ const Game = {
         if (this.levels.enemy.total <= 0) {
             this.userWin()
         }
-    },
+    }
 
-    userWin() {
+    this.userWin = () => {
         this.levels.levelUp()
         this.startLevel()
-    },
+    }
 
-    createModels() {
+    this.createModels = () => {
         this.levels = new Levels(this)
         this.bulling = new Bulling(this)
         this.base = new Base(this)
@@ -172,15 +169,15 @@ const Game = {
 
         // инициализация моделей
         this.bulling.init()
-    },
+    }
 
-    destroyModel(model) {
+    this.destroyModel = (model) => {
         for (let key in model) {
             delete model[key]
         }
-    },
+    }
 
-    startLevel() {
+    this.startLevel = () => {
         // this.levels.create() - создает карту и размешает её сразу посередине канваса
         this.levels.create()
 
@@ -200,12 +197,12 @@ const Game = {
         // инициализируем информацию
         this.info.init()
 
-    },
+    }
 
-    userLost() {
-    },
+    this.userLost = () => {
+    }
 
-    killUser(npc) {
+    this.killUser = (npc) => {
         if (npc.hasArmor()) return;
 
         if (this.levels.getUserLives() > 0) {
@@ -217,9 +214,9 @@ const Game = {
         if (this.levels.getUserLives() <= 0) {
             this.userLost()
         }
-    },
+    }
 
-    createNewNpc(type, position) {
+    this.createNewNpc = (type, position) => {
         let npc = new Npc(this, type)
 
         if (!position && type === 'enemy') {
@@ -231,9 +228,9 @@ const Game = {
         npc.init()
 
         return npc
-    },
+    }
 
-    initEvents() {
+    this.initEvents = () => {
         const onKeyEvent = ({keyCode}, type) => {
             let key = KEYS[keyCode]
             if (key) {
@@ -260,9 +257,9 @@ const Game = {
         window.addEventListener("resize", () => {
             this.onWindowResize()
         })
-    },
+    }
 
-    preload() {
+    this.preload = () => {
         return new Promise(resolve => {
             let loaded = 0
             let required = Object.keys(this.sprites).length
@@ -279,25 +276,25 @@ const Game = {
                 this.sprites[sprite].src = `assets/img/${sprite}.png`
             }
         })
-    },
+    }
 
-    loop() {
+    this.loop = () => {
         requestAnimationFrame(() => {
             this.update()
             this.render()
             this.loop()
         })
-    },
+    }
 
-    update() {
+    this.update = () => {
         this.bulling.update()
         this.user.update()
         this.enemies.forEach(enemy => {
             enemy.update()
         })
-    },
+    }
 
-    render() {
+    this.render = () => {
         this.backgroundRender()
         this.levels.renderBackground()
         this.enemies.forEach(enemy => {
@@ -308,12 +305,12 @@ const Game = {
         this.base.render()
         this.levels.renderMap()
         this.info.render()
-    },
+    }
 
-    backgroundRender() {
+    this.backgroundRender = () => {
         this.ctx.fillStyle = '#636363'
         this.ctx.fillRect(0, 0, this.width, this.height)
-    },
+    }
 }
 
 export default Game
