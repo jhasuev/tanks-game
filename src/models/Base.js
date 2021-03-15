@@ -1,4 +1,4 @@
-function Npc(game, type = 'user') {
+function Npc(game) {
     this.game = game
     this.x = undefined
     this.y = undefined

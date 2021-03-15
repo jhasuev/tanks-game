@@ -160,7 +160,6 @@ const Game = {
     },
 
     userWin() {
-        console.log(1)
         this.levels.levelUp()
         this.startLevel()
     },
@@ -177,9 +176,7 @@ const Game = {
 
     destroyModel(model) {
         for (let key in model) {
-            if (model.hasOwnProperty(key)) {
-                delete model[key]
-            }
+            delete model[key]
         }
     },
 

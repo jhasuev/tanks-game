@@ -1,4 +1,4 @@
-import maps from "../maps.json";
+import maps from "/public/json/maps.json"
 
 export default function Levels(game) {
     this.game = game;
