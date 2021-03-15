@@ -3,6 +3,7 @@
     <div class="maps-footer-buttons">
       <button
         class="maps-footer-buttons-item btn btn-primary"
+        :disabled="getSelectedMapIndex === -1"
         @click="onPlayClick"
       >Play
       </button>
@@ -12,9 +13,15 @@
 
 <script>
 import emitter from "@/./eventHub"
+import {mapGetters} from "vuex";
 
 export default {
   name: 'MapsFooter',
+  computed: {
+    ...mapGetters([
+      "getSelectedMapIndex",
+    ]),
+  },
   methods: {
     onPlayClick() {
       emitter.emit("onplay")

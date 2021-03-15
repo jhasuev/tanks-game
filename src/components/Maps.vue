@@ -7,7 +7,7 @@
 
         :img="map.preview"
         :label="map.name"
-        :selected="i === selectedMapIndex"
+        :selected="i === getSelectedMapIndex"
         @click="onMapClick(i)"
       />
     </ul>
@@ -21,6 +21,7 @@
 import MapsItem from "@/components/MapsItem";
 import MapsFooter from "@/components/MapsFooter";
 import Maps from "/public/json/maps.json"
+import {mapGetters, mapMutations} from "vuex"
 
 export default {
   name: 'Maps',
@@ -31,12 +32,20 @@ export default {
   data() {
     return {
       maps: Maps,
-      selectedMapIndex: -1,
     }
   },
+  computed: {
+    ...mapGetters([
+      "getSelectedMapIndex",
+    ]),
+  },
   methods: {
+    ...mapMutations([
+      "setSelectedMapIndex"
+    ]),
+
     onMapClick(mapIndex) {
-      this.selectedMapIndex = mapIndex
+      this.setSelectedMapIndex(mapIndex)
     },
   }
 }

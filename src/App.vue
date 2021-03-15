@@ -7,6 +7,7 @@
 import Game from "@/components/Game";
 import Menu from "@/components/Menu";
 import emitter from "@/./eventHub"
+import {mapGetters} from "vuex"
 
 
 export default {
@@ -19,6 +20,11 @@ export default {
     return {
       menu: true,
     }
+  },
+  computed: {
+    ...mapGetters([
+      "getSelectedMapIndex",
+    ]),
   },
   created() {
     emitter.on("onplay", () => {
