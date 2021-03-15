@@ -1,4 +1,4 @@
-import {checkCollide, getDirectionVelocity} from "../helper"
+import {checkCollide, getDirectionVelocity, removeObj} from "../helper"
 
 function Bulling(game) {
     this.game = game
@@ -176,6 +176,13 @@ function Bulling(game) {
 
     this.clearBurnings = () => {
         this.burning.list = this.burning.list.filter(burning => !burning.remove)
+    }
+
+    this.reset = () => {
+        removeObj(this.bulling.list)
+        removeObj(this.burning.list)
+        this.bulling.list = []
+        this.burning.list = []
     }
 
     this.move = () => {

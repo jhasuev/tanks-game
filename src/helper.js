@@ -61,3 +61,17 @@ export function getDirectionVelocity(direction, velocity) {
 
     return {dx, dy}
 }
+
+export function removeObj(arr) {
+    if (!Array.isArray(arr)) arr = [arr]
+
+    for (let arrKey in arr) {
+        let obj = arr[arrKey]
+
+        for (let objKey in obj) {
+            delete obj[objKey]
+        }
+
+        delete arr[arrKey]
+    }
+}

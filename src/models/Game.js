@@ -9,7 +9,7 @@ import Base from "./Base.js"
 // Вся отображаемая информация на канвасе
 import Info from "./Info";
 // вспомогатели
-import {random, KEYS} from "../helper"
+import {random, removeObj, KEYS} from "../helper"
 import emitter from "@/./eventHub"
 
 // главный объект
@@ -131,7 +131,7 @@ function Game() {
 
     this.createEnemies = () => {
         if (this.enemies.length) {
-            this.enemies.forEach(enemy => this.destroyModel(enemy))
+            removeObj(this.enemies)
             this.enemies = []
         }
 
@@ -198,12 +198,6 @@ function Game() {
         this.bulling.init()
     }
 
-    this.destroyModel = (model) => {
-        for (let key in model) {
-            delete model[key]
-        }
-    }
-
     this.startLevel = (level) => {
         this.ended = false
         this.levels.setCurrentLevel(level)
@@ -230,6 +224,8 @@ function Game() {
 
         // инициализируем информацию
         this.info.init()
+
+        this.bulling.reset()
 
         this.running = true
         this.started = true
