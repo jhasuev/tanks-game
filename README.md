@@ -1,3 +1,6 @@
+# Demo
+https://jhasuev.github.io/tanks-game/
+
 # Tanks on canvas
 
 ##### Install
